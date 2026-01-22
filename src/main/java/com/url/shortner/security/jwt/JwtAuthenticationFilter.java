@@ -1,4 +1,4 @@
-package com.url.security.jwt;
+package com.url.shortner.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,10 +10,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
-public class JitAuthenticationFilter extends OncePerRequestFilter {
+@Component
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Autowired
@@ -50,5 +52,7 @@ public class JitAuthenticationFilter extends OncePerRequestFilter {
             e.printStackTrace();
 
         }
+
+        filterChain.doFilter(request, response);
     }
 }

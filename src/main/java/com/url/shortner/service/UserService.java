@@ -4,10 +4,10 @@ import com.url.shortner.dtos.LoginRequest;
 import com.url.shortner.models.User;
 import com.url.shortner.repo.UserRepository;
 import com.url.shortner.security.jwt.JwtAuthenticationResponse;
+import com.url.shortner.security.jwt.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,11 +17,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    private  final JwtUtils jwtUtils;
 
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, AuthenticationManager authenticationManager) {
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
     }
 
     public User registerUser(User user) {
@@ -36,10 +38,8 @@ public class UserService {
                         loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        SecurityContext context = SecurityContextHolder.getContext();
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-
-
-        return "";
+        String jwt = jwtUtils.generateToken(principal);
+        return new JwtAuthenticationResponse(jwt);
     }
 }

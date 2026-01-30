@@ -1,8 +1,6 @@
 package com.url.shortner.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.sql.results.spi.LoadContexts;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +14,7 @@ public class ClickEvent {
 
     @ManyToOne
     @JoinColumn(name = "url_mapping_id")
-    private URLMapping urlMapping;
+    private UrlMapping urlMapping;
 
     public Long getId() {
         return id;
@@ -34,11 +32,11 @@ public class ClickEvent {
         this.clickDate = clickDate;
     }
 
-    public URLMapping getUrlMapping() {
+    public UrlMapping getUrlMapping() {
         return urlMapping;
     }
 
-    public void setUrlMapping(URLMapping urlMapping) {
+    public void setUrlMapping(UrlMapping urlMapping) {
         this.urlMapping = urlMapping;
     }
 }

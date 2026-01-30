@@ -1,14 +1,20 @@
 package com.url.shortner.models;
 
-import jakarta.persistence.*;
-import lombok.Data;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 @Entity
 @Table(name = "url-mappings")
-public class URLMapping {
+public class UrlMapping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,7 +22,8 @@ public class URLMapping {
     private String originalUrl;
     private String shortUrl;
     private int clickCount = 0;
-    private Locale createdDate;
+    @CreationTimestamp
+    private LocalDateTime createdDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -57,11 +64,11 @@ public class URLMapping {
         this.clickCount = clickCount;
     }
 
-    public Locale getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Locale createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 

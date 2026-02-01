@@ -4,6 +4,8 @@ import com.url.shortner.dtos.UrlMappingDto;
 import com.url.shortner.models.User;
 import com.url.shortner.service.UrlMappingService;
 import com.url.shortner.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +28,10 @@ public class UrlMappingController {
     }
 
     @PostMapping("/shorten")
-    @PreAuthorize("hasRole('USER)")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(
+            summary = "Shorten a URL",
+            security = @SecurityRequirement(name = "Bearer Authentication"))
     public ResponseEntity<UrlMappingDto> createShortUrl(@RequestBody Map<String,String> request,
                                                         Principal principal) {
 

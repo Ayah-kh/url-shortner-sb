@@ -8,11 +8,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,7 +34,7 @@ public class UrlMappingController {
     @Operation(
             summary = "Shorten a URL",
             security = @SecurityRequirement(name = "Bearer Authentication"))
-    public ResponseEntity<UrlMappingDto> createShortUrl(@RequestBody Map<String,String> request,
+    public ResponseEntity<UrlMappingDto> createShortUrl(@RequestBody Map<String, String> request,
                                                         Principal principal) {
 
         String originalUrl = request.get("originalUrl");
@@ -40,5 +42,14 @@ public class UrlMappingController {
         UrlMappingDto urlMappingDto = urlMappingService.createShortUrl(originalUrl, user);
 
         return ResponseEntity.ok(urlMappingDto);
+    }
+
+    @GetMapping("/my-urls")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<List<UrlMappingDto>> getUserUrls(Principal principal) {
+        User user = userService.findByUserName(principal.getName());
+        List<UrlMappingDto> urls = urlMappingService.getUserUrls(user);
+
+        return ResponseEntity.ok(urls);
     }
 }

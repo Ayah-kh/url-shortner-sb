@@ -5,6 +5,7 @@ import com.url.shortner.models.UrlMapping;
 import com.url.shortner.models.User;
 import com.url.shortner.repo.UrlMappingRepository;
 import org.springframework.stereotype.Service;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -52,10 +53,17 @@ public class UrlMappingService {
 
         StringBuilder shortUrl = new StringBuilder(8);
 
-        for (int i = 0; i <8; i++) {
+        for (int i = 0; i < 8; i++) {
             shortUrl.append(characters.charAt(random.nextInt(characters.length())));
 
         }
         return shortUrl.toString();
+    }
+
+    public List<UrlMappingDto> getUserUrls(User user) {
+        return urlMappingRepository.findByUser(user)
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 }

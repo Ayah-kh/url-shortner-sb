@@ -30,6 +30,9 @@ public class UrlMappingService {
 
     public UrlMappingDto createShortUrl(String originalUrl, User user) {
 
+        // TODO: 06/02/2026 Validate url contains  http://   or   https:// and any other validation
+        // TODO: 06/02/2026 validate not to create shortner for the same URL
+
         String shortURl = generateShortUrl();
         UrlMapping urlMapping = new UrlMapping();
         urlMapping.setOriginalUrl(originalUrl);
@@ -111,5 +114,22 @@ public class UrlMappingService {
                         Collectors.groupingBy(clickEvent -> clickEvent.getClickDate().toLocalDate(),
                                 Collectors.counting()));
 
+    }
+
+    public UrlMapping getOriginalUrl(String shortUrl) {
+
+
+        UrlMapping urlMapping = urlMappingRepository.findByShortUrl(shortUrl);
+
+        if (urlMapping != null) {
+            urlMapping.setClickCount(urlMapping.getClickCount() + 1);
+            urlMappingRepository.save(urlMapping);
+
+            ClickEvent clickEvent = new ClickEvent();
+            clickEvent.setUrlMapping(urlMapping);
+            clickEventRepository.save(clickEvent);
+        }
+
+        return urlMapping;
     }
 }

@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Ayah
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/create-tables.sql
+

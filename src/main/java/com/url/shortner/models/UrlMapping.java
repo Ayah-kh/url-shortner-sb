@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "url-mappings")
+@Table(name = "url_mappings")
 public class UrlMapping {
 
     @Id

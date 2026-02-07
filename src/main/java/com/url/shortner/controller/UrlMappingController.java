@@ -2,11 +2,11 @@ package com.url.shortner.controller;
 
 import com.url.shortner.dtos.ClickEventDto;
 import com.url.shortner.dtos.UrlMappingDto;
+import com.url.shortner.dtos.UrlShortenRequest;
 import com.url.shortner.models.User;
 import com.url.shortner.service.UrlMappingService;
 import com.url.shortner.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,15 +37,10 @@ public class UrlMappingController {
 
     @PostMapping("/shorten")
     @PreAuthorize("hasRole('USER')")
-    @Operation(
-            summary = "Shorten a URL",
-            security = @SecurityRequirement(name = "Bearer Authentication"))
-    public ResponseEntity<UrlMappingDto> createShortUrl(@RequestBody Map<String, String> request,
+    public ResponseEntity<UrlMappingDto> createShortUrl(@RequestBody @Valid UrlShortenRequest request,
                                                         Principal principal) {
 
-        String originalUrl = request.get("originalUrl");
-        User user = userService.findByUserName(principal.getName());
-        UrlMappingDto urlMappingDto = urlMappingService.createShortUrl(originalUrl, user);
+        UrlMappingDto urlMappingDto = urlMappingService.createShortUrl(request.getOriginalUrl(), principal);
 
         return ResponseEntity.ok(urlMappingDto);
     }

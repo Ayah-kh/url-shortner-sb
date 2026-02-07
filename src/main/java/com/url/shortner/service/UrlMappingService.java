@@ -8,10 +8,12 @@ import com.url.shortner.models.User;
 import com.url.shortner.repo.ClickEventRepository;
 import com.url.shortner.repo.UrlMappingRepository;
 import org.springframework.stereotype.Service;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -20,18 +22,28 @@ public class UrlMappingService {
 
     private final UrlMappingRepository urlMappingRepository;
     private final ClickEventRepository clickEventRepository;
+    private final UserService userService;
 
     public UrlMappingService(UrlMappingRepository urlMappingRepository,
-                             ClickEventRepository clickEventRepository) {
+                             ClickEventRepository clickEventRepository,
+                             UserService userService) {
+
         this.urlMappingRepository = urlMappingRepository;
         this.clickEventRepository = clickEventRepository;
+        this.userService = userService;
     }
 
 
-    public UrlMappingDto createShortUrl(String originalUrl, User user) {
+    public UrlMappingDto createShortUrl(String originalUrl, Principal principal) {
+        
+        User user = userService.findByUserName(principal.getName());
 
-        // TODO: 06/02/2026 Validate url contains  http://   or   https:// and any other validation
-        // TODO: 06/02/2026 validate not to create shortner for the same URL
+        originalUrl = normalizeUrl(originalUrl);
+        Optional<UrlMapping> existUrlMapping= urlMappingRepository.findByUserAndOriginalUrl(user, originalUrl);
+
+        if (existUrlMapping.isPresent()) {
+            return toDto(existUrlMapping.get());
+        }
 
         String shortURl = generateShortUrl();
         UrlMapping urlMapping = new UrlMapping();
@@ -44,10 +56,17 @@ public class UrlMappingService {
         return toDto(saved);
     }
 
+    private String normalizeUrl(String url) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            return "https://" + url;
+        }
+        return url;
+    }
+
     private UrlMappingDto toDto(UrlMapping urlMapping) {
 
         UrlMappingDto urlMappingDto = new UrlMappingDto();
-        urlMappingDto.setId(urlMappingDto.getId());
+        urlMappingDto.setId(urlMapping.getId());
         urlMappingDto.setOriginalUrl(urlMapping.getOriginalUrl());
         urlMappingDto.setShortUrl(urlMapping.getShortUrl());
         urlMappingDto.setClickCount(urlMapping.getClickCount());

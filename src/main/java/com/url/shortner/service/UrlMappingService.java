@@ -35,11 +35,11 @@ public class UrlMappingService {
 
 
     public UrlMappingDto createShortUrl(String originalUrl, Principal principal) {
-        
+
         User user = userService.findByUserName(principal.getName());
 
         originalUrl = normalizeUrl(originalUrl);
-        Optional<UrlMapping> existUrlMapping= urlMappingRepository.findByUserAndOriginalUrl(user, originalUrl);
+        Optional<UrlMapping> existUrlMapping = urlMappingRepository.findByUserAndOriginalUrl(user, originalUrl);
 
         if (existUrlMapping.isPresent()) {
             return toDto(existUrlMapping.get());
@@ -92,7 +92,9 @@ public class UrlMappingService {
         return shortUrl.toString();
     }
 
-    public List<UrlMappingDto> getUserUrls(User user) {
+    public List<UrlMappingDto> getUserUrls(Principal principal) {
+
+        User user = userService.findByUserName(principal.getName());
         return urlMappingRepository.findByUser(user)
                 .stream()
                 .map(this::toDto)
@@ -123,7 +125,10 @@ public class UrlMappingService {
         return null;
     }
 
-    public Map<LocalDate, Long> getTotalClicksByDate(User user, LocalDate start, LocalDate end) {
+    public Map<LocalDate, Long> getTotalClicksByDate(Principal principal, LocalDate start, LocalDate end) {
+
+        User user = userService.findByUserName(principal.getName());
+
         List<UrlMapping> byUser = urlMappingRepository.findByUser(user);
         List<ClickEvent> clickEvents = clickEventRepository.findByUrlMappingInAndClickDateBetween(byUser,
                 start.atStartOfDay(), end.plusDays(1).atStartOfDay());
